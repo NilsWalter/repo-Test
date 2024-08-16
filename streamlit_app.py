@@ -1,14 +1,7 @@
 # Import python packages
 import streamlit as st
-# from snowflake.snowpark.context import get_active_session
+import requests
 from snowflake.snowpark.functions import col
-
-
-# with st.form("my_form"):
-#     st.write("Inside the form")
-#     # slider_val = st.slider("Form slider")
-#     # checkbox_val = st.checkbox("Form checkbox")
-
 
 title = st.text_input("Name Smoothie", "fuck that shit")
 st.write("Name of your Smoothie is", title)
@@ -20,26 +13,9 @@ st.write(
     """Choose the fruit you want in your custom smoothie."""
 )
 
-#getData
-# session = get_active_session()
 cnx = st.connection("snowflake")
 session = cnx.session()
 my_dataframe = session.table("smoothies.public.fruit_options").select(col('fruit_name'))
-# st.dataframe(data=my_dataframe, use_container_width=True)
-
-
-#selectboxFlavour
-# option = st.selectbox(
-#     "Fav fruit?",
-#     # ("select a flavor", "Banana", "Strawberry", "Pineapple"),
-#     # ("select a flavor"), 
-#     my_dataframe,
-# )
-
-# if( option == "select a flavor"):
-#     st.write("please select a flavor")
-# else:
-#     st.write("You selected:", option)
 
 ingredients_list = st.multiselect(
     'Choose up to 5 ingredients:'
@@ -59,12 +35,13 @@ if ingredients_list:
         ingredients_string += ', '
         # ingredients_string += '\''
         
+        fruityvice_response = requests.get("https://fruityvice.com/api/fruit/watermelon")
+        st.text(fruityvice_response.json())
+        
     # st.write(ingredients_string)
-
 
     my_insert_stmt = """ insert into smoothies.public.orders(ingredients, name_on_order)
         values ('""" + ingredients_string + """ ','""" + title + """')"""
-        
     
     # st.write(my_insert_stmt)
     # st.stop()
@@ -76,25 +53,4 @@ if ingredients_list:
         st.success('Your Smoothie is ordered')
         ingredients_list = ''
         ingredients_string = ''
-
-
-
-
-
-#     # Every form must have a submit button.
-#     submitted = st.form_submit_button("Submit")
-#     if submitted:
-#         # st.write("slider", slider_val, "checkbox", checkbox_val)
-#         st.write(ingredients_list)
-#         st.success('Your Smoothie is ordered')
-# # st.write("Outside the form")
-
-
-import requests
-fruityvice_response = requests.get("https://fruityvice.com/api/fruit/watermelon")
-st.text(fruityvice_response.json())
-
-
-
-
 
