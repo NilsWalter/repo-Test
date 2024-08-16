@@ -6,12 +6,8 @@ from snowflake.snowpark.functions import col
 title = st.text_input("Name Smoothie", "fuck that shit")
 st.write("Name of your Smoothie is", title)
 
-
-# Write directly to the app
 st.title("Customize your smoothie :cup_with_straw:")
-st.write(
-    """Choose the fruit you want in your custom smoothie."""
-)
+st.write("""Choose the fruit you want in your custom smoothie.""")
 
 cnx = st.connection("snowflake")
 session = cnx.session()
@@ -24,25 +20,19 @@ ingredients_list = st.multiselect(
 )
 
 if ingredients_list: 
-    # st.write(ingredients_list)
-    # st.text(ingredients_list)
-    
     ingredients_string = ''
     
     for fruit_chosen in ingredients_list:
         ingredients_string += fruit_chosen + ' '
         st.subheader(fruit_chosen + ' Nutrition Information')
-        # st.text(fruityvice_response.json())
-        fruityvice_response = requests.get("https://fruityvice.com/api/fruit/watermelon" + fruit_chosen)
+        fruityvice_response = requests.get("https://fruityvice.com/api/fruit/" + fruit_chosen)
         fv_df = st.dataframe(data=fruityvice_response.json(), use_container_width=True)
         
-    # st.write(ingredients_string)
-
-    my_insert_stmt = """ insert into smoothies.public.orders(ingredients, name_on_order)
-        values ('""" + ingredients_string + """ ','""" + title + """')"""
     
-    # st.write(my_insert_stmt)
-    # st.stop()
+    my_insert_stmt = ""
+    # my_insert_stmt = """ insert into smoothies.public.orders(ingredients, name_on_order)
+        # values ('""" + ingredients_string + """ ','""" + title + """')"""
+    
     time_to_insert = st.button('submit order')
     
     if time_to_insert:
